@@ -1,5 +1,8 @@
 /* AS Construction — main.js */
 
+// ── GSAP + ScrollTrigger ────────────────────────
+gsap.registerPlugin(ScrollTrigger)
+
 // ── Reduced motion ──────────────────────────────
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -7,15 +10,18 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 const lenis = new Lenis({
   duration: 1.4,
   easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  smooth: true
+  smooth: true,
+  smoothTouch: false,
 })
 
-function raf(time) {
-  lenis.raf(time)
-  ScrollTrigger.update()
-  requestAnimationFrame(raf)
-}
-requestAnimationFrame(raf)
+// Wire Lenis → ScrollTrigger: scroll touch dispara triggers
+lenis.on('scroll', ScrollTrigger.update)
+
+// GSAP ticker drive o Lenis RAF (padrão recomendado)
+gsap.ticker.add((time) => {
+  lenis.raf(time * 1000)
+})
+gsap.ticker.lagSmoothing(0)
 
 // ── Mobile menu refs ────────────────────────────
 const hamburger = document.getElementById('navHamburger')
@@ -35,9 +41,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     navMobile.setAttribute('aria-hidden', 'true')
   })
 })
-
-// ── GSAP setup ─────────────────────────────────
-gsap.registerPlugin(ScrollTrigger)
 
 // ── Navbar scrolled state ───────────────────────
 const navbar = document.getElementById('navbar')
@@ -75,7 +78,7 @@ if (!prefersReducedMotion) {
         duration: 2.4,
         ease: 'power1.out',
         snap: { textContent: 1 },
-        scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+        scrollTrigger: { trigger: el, start: 'top 90%', once: true }
       }
     )
   })
@@ -84,7 +87,7 @@ if (!prefersReducedMotion) {
   const reveal = (selector, trigger, vars = {}) => {
     gsap.from(selector, {
       opacity: 0, y: 20, duration: 1.4, ease: 'power1.out',
-      scrollTrigger: { trigger: trigger || selector, start: 'top 84%', once: true },
+      scrollTrigger: { trigger: trigger || selector, start: 'top 88%', once: true },
       ...vars
     })
   }
@@ -105,7 +108,7 @@ if (!prefersReducedMotion) {
     const card = item.querySelector('.obra-sticky-card')
     gsap.from(card, {
       opacity: 0, y: 24, duration: 1.4, ease: 'power1.out',
-      scrollTrigger: { trigger: item, start: 'top 88%', once: true }
+      scrollTrigger: { trigger: item, start: 'top 90%', once: true }
     })
     if (isDesktop && i < obraItems.length - 1) {
       gsap.to(card, {
@@ -128,11 +131,11 @@ if (!prefersReducedMotion) {
   // Contato
   gsap.from('.contato-left > *', {
     opacity: 0, x: -20, duration: 1.4, ease: 'power1.out', stagger: 0.14,
-    scrollTrigger: { trigger: '.contato-layout', start: 'top 82%', once: true }
+    scrollTrigger: { trigger: '.contato-layout', start: 'top 88%', once: true }
   })
   gsap.from('.contato-form', {
     opacity: 0, x: 20, duration: 1.6, ease: 'power1.out',
-    scrollTrigger: { trigger: '.contato-layout', start: 'top 82%', once: true }
+    scrollTrigger: { trigger: '.contato-layout', start: 'top 88%', once: true }
   })
 
   // Footer
@@ -214,4 +217,14 @@ if (form) {
   })
 }
 
+// ── ScrollTrigger refresh ───────────────────────
 document.fonts.ready.then(() => ScrollTrigger.refresh())
+
+let _refreshTimer
+window.addEventListener('resize', () => {
+  clearTimeout(_refreshTimer)
+  _refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 250)
+})
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => ScrollTrigger.refresh(), 350)
+})
