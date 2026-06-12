@@ -1,40 +1,52 @@
 /* AS Construction — main.js */
 
-// ── GSAP + ScrollTrigger ────────────────────────
+// ── GSAP + ScrollTrigger ───────────────────────
 gsap.registerPlugin(ScrollTrigger)
 
-// ── Reduced motion ──────────────────────────────
+// ── Reduced motion ─────────────────────────────
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// ── Lenis smooth scroll ────────────────────────
-const lenis = new Lenis({
-  duration: 1.4,
-  easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  smooth: true,
-  smoothTouch: false,
-})
+// ── Lenis: somente em desktop / tablet (> 768px) ──────
+// Lenis 1.0.x com smoothTouch:false não captura eventos touch,
+// então lenis.on('scroll') nunca dispara no celular e o
+// ScrollTrigger fica sem atualização. No mobile usamos scroll
+// nativo — o ScrollTrigger funciona diretamente sem proxy.
+const _isMobile = window.innerWidth <= 768
+let lenis = null
 
-// Wire Lenis → ScrollTrigger: scroll touch dispara triggers
-lenis.on('scroll', ScrollTrigger.update)
+if (!_isMobile) {
+  lenis = new Lenis({
+    duration: 1.4,
+    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smooth: true,
+    smoothTouch: false,
+  })
+  lenis.on('scroll', ScrollTrigger.update)
+  gsap.ticker.add((time) => { lenis.raf(time * 1000) })
+  gsap.ticker.lagSmoothing(0)
+}
 
-// GSAP ticker drive o Lenis RAF (padrão recomendado)
-gsap.ticker.add((time) => {
-  lenis.raf(time * 1000)
-})
-gsap.ticker.lagSmoothing(0)
-
-// ── Mobile menu refs ────────────────────────────
+// ── Mobile menu refs ───────────────────────────
 const hamburger = document.getElementById('navHamburger')
 const navMobile  = document.getElementById('navMobile')
 
-// Anchor links via Lenis
+// Anchor links — Lenis no desktop, scrollTo nativo no mobile
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', e => {
     const href = anchor.getAttribute('href')
     if (href === '#') return
     e.preventDefault()
     const target = document.querySelector(href)
-    if (target) lenis.scrollTo(target, { offset: -80 })
+    if (target) {
+      if (lenis) {
+        lenis.scrollTo(target, { offset: -80 })
+      } else {
+        window.scrollTo({
+          top: target.getBoundingClientRect().top + window.scrollY - 80,
+          behavior: 'smooth'
+        })
+      }
+    }
     navMobile.classList.remove('open')
     hamburger.classList.remove('open')
     hamburger.setAttribute('aria-expanded', 'false')
@@ -42,7 +54,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   })
 })
 
-// ── Navbar scrolled state ───────────────────────
+// ── Navbar scrolled state ──────────────────────
 const navbar = document.getElementById('navbar')
 ScrollTrigger.create({
   start: 'top -40',
@@ -52,7 +64,7 @@ ScrollTrigger.create({
 
 if (!prefersReducedMotion) {
 
-  // ── Hero entrance ──────────────────────────────
+  // ── Hero entrance ─────────────────────────────
   gsap.timeline({ defaults: { ease: 'power1.out' } })
     .from('.hero-eyebrow',   { opacity: 0, y: 12, duration: 1.2, delay: 0.4 })
     .from('.hero-headline',  { opacity: 0, y: 20, duration: 1.6 }, '-=0.8')
@@ -61,14 +73,14 @@ if (!prefersReducedMotion) {
     .from('.hero-stat',      { opacity: 0, y: 12, duration: 1.2, stagger: 0.14 }, '-=0.8')
     .from('.stat-divider',   { opacity: 0, duration: 0.8 }, '-=1.0')
 
-  // ── Hero grid parallax ──────────────────────────
+  // ── Hero grid parallax ─────────────────────────
   gsap.to('.hero-grid', {
     yPercent: 18,
     ease: 'none',
     scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
   })
 
-  // ── Animated counter ────────────────────────────
+  // ── Animated counter ───────────────────────────
   document.querySelectorAll('.stat-value[data-target]').forEach(el => {
     const target = parseInt(el.getAttribute('data-target'))
     gsap.fromTo(el,
@@ -83,7 +95,7 @@ if (!prefersReducedMotion) {
     )
   })
 
-  // ── Section reveal helper ───────────────────────
+  // ── Section reveal helper ──────────────────────
   const reveal = (selector, trigger, vars = {}) => {
     gsap.from(selector, {
       opacity: 0, y: 20, duration: 1.4, ease: 'power1.out',
@@ -92,13 +104,8 @@ if (!prefersReducedMotion) {
     })
   }
 
-  // Credibility strip
   reveal('.credibility-label', '.section-credibility')
-
-  // Coverage strip
   reveal('.coverage-item', '.section-coverage', { stagger: 0.12 })
-
-  // Obras
   reveal('#obras .section-header', '#obras')
   reveal('.obras-cta', '.obras-cta')
 
@@ -106,10 +113,13 @@ if (!prefersReducedMotion) {
   const isDesktop = window.matchMedia('(min-width: 769px)').matches
   obraItems.forEach((item, i) => {
     const card = item.querySelector('.obra-sticky-card')
-    gsap.from(card, {
-      opacity: 0, y: 24, duration: 1.4, ease: 'power1.out',
-      scrollTrigger: { trigger: item, start: 'top 90%', once: true }
-    })
+    // No mobile o CSS força opacity:1 e transform:none nas cards — animamos apenas em telas maiores
+    if (!_isMobile) {
+      gsap.from(card, {
+        opacity: 0, y: 24, duration: 1.4, ease: 'power1.out',
+        scrollTrigger: { trigger: item, start: 'top 90%', once: true }
+      })
+    }
     if (isDesktop && i < obraItems.length - 1) {
       gsap.to(card, {
         scale: 0.94,
@@ -121,14 +131,10 @@ if (!prefersReducedMotion) {
     }
   })
 
-  // Sobre / Diferenciais
   reveal('.diferenciais-left > *', '.diferenciais-layout', { x: -20, y: 0, stagger: 0.14 })
   reveal('.diferencial-card', '.diferenciais-grid', { stagger: 0.1 })
-
-  // Processo
   reveal('.step', '.processo-steps', { x: -16, y: 0, stagger: 0.18 })
 
-  // Contato
   gsap.from('.contato-left > *', {
     opacity: 0, x: -20, duration: 1.4, ease: 'power1.out', stagger: 0.14,
     scrollTrigger: { trigger: '.contato-layout', start: 'top 88%', once: true }
@@ -138,12 +144,11 @@ if (!prefersReducedMotion) {
     scrollTrigger: { trigger: '.contato-layout', start: 'top 88%', once: true }
   })
 
-  // Footer
   reveal('.footer-brand, .footer-col', '.footer', { stagger: 0.1 })
 
-  // ── Story Scroll — Services ──────────────────────
+  // ── Story Scroll — Services (desktop/tablet only) ───
   ;(function initStoryScroll() {
-    if (window.innerWidth <= 768) return
+    if (_isMobile) return
     const container = document.getElementById('servicesFlow')
     if (!container) return
     const sections = Array.from(container.querySelectorAll('[data-flow-section]'))
@@ -182,7 +187,7 @@ if (!prefersReducedMotion) {
 
 } // end if (!prefersReducedMotion)
 
-// ── Mobile menu ────────────────────────────────
+// ── Mobile menu ──────────────────────────────
 hamburger.addEventListener('click', () => {
   const isOpen = navMobile.classList.toggle('open')
   hamburger.classList.toggle('open', isOpen)
@@ -199,7 +204,7 @@ window.addEventListener('resize', () => {
   }
 })
 
-// ── Form → WhatsApp ─────────────────────────────
+// ── Form → WhatsApp ───────────────────────────
 const form = document.getElementById('contatoForm')
 if (form) {
   form.addEventListener('submit', e => {
@@ -217,7 +222,7 @@ if (form) {
   })
 }
 
-// ── ScrollTrigger refresh ───────────────────────
+// ── ScrollTrigger refresh ──────────────────────
 document.fonts.ready.then(() => ScrollTrigger.refresh())
 
 let _refreshTimer
