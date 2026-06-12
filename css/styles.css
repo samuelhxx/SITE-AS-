@@ -158,6 +158,11 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .hero-scroll-hint{position:absolute;bottom:var(--sp-6);left:50%;transform:translateX(-50%);z-index:2}
 .scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,transparent,rgba(255,255,255,.2));animation:scrollLine 2.5s ease infinite}
 @keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+/* hero stats: stack on mobile */
+@media(max-width:640px){
+  .hero-stats{flex-direction:column;gap:var(--sp-4);align-items:flex-start;max-width:100%}
+  .stat-divider{display:none}
+}
 
 /* —— Credibility —————————————————————————— */
 .section-credibility{padding:var(--sp-8) 0;background:var(--bg-1);border-top:1px solid var(--border-0);border-bottom:1px solid var(--border-0);overflow:hidden}
@@ -176,6 +181,10 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-bottom:var(--sp-8);background:var(--border-0);border:1px solid var(--border-0)}
 @media(max-width:1024px){.services-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:640px){.services-grid{grid-template-columns:1fr}}
+/* 5th card spans 2 cols on desktop to fill the row */
+@media(min-width:1025px){.services-grid .service-card:last-child:nth-child(3n+2){grid-column:span 2}}
+/* 5th card spans 2 cols on tablet */
+@media(min-width:641px) and (max-width:1024px){.services-grid .service-card:last-child:nth-child(2n+1){grid-column:span 2}}
 .service-card{position:relative;background:var(--bg-0);overflow:hidden;cursor:default;transition:background var(--t-slow)}
 .service-card:hover{background:var(--bg-2)}
 .service-card-highlight{background:var(--bg-1)}
@@ -194,8 +203,6 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .services-cta p{font-size:var(--fs-sm);color:var(--text-1);letter-spacing:.01em}
 
 /* —— Obras sticky scroll ————————————————— */
-/* Sticky works only when no ancestor has overflow:hidden.
-   .obras-section has no padding — obras-header/footer handle spacing. */
 .obras-section{background-color:var(--bg-0)}
 .obras-header{padding:var(--sp-16) 0 var(--sp-8)}
 .obras-footer{padding:var(--sp-8) 0 var(--sp-16)}
@@ -214,7 +221,6 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .obra-sticky-item:nth-child(2){z-index:2}
 .obra-sticky-item:nth-child(3){z-index:3}
 .obra-sticky-item:nth-child(4){z-index:4}
-.obra-sticky-item:nth-child(5){z-index:5}
 .obra-sticky-card{
   position:relative;
   width:100%;
@@ -258,9 +264,10 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
   line-height:1.1;
 }
 @media(max-width:640px){.obra-sticky-name{font-size:var(--fs-xl)}}
+.obra-sticky-desc{font-size:var(--fs-sm);color:rgba(255,255,255,.55);line-height:1.7;max-width:52ch;letter-spacing:.01em}
 .obra-sticky-location{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35)}
 .obras-cta{text-align:center}
-/* Mobile: disable sticky to prevent layout bugs */
+/* Mobile: disable sticky */
 @media(max-width:768px){
   .obra-sticky-item{position:relative;height:auto;padding:0 var(--sp-2);margin-bottom:2px}
   .obra-sticky-card{aspect-ratio:4/3;max-width:100%;transform:none !important;opacity:1 !important}
