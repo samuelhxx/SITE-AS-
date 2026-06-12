@@ -1,19 +1,19 @@
 /* AS Construction — main.js */
 
-// ── GSAP + ScrollTrigger ───────────────────────
+// ── GSAP + ScrollTrigger ──────────────────────
 gsap.registerPlugin(ScrollTrigger)
 
-// ── Reduced motion ─────────────────────────────
+// ── Reduced motion ────────────────────────────
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// ── Lenis: desativado apenas em celulares (≤480px) ─────
-// Lenis 1.0.x com smoothTouch:false não captura eventos touch,
-// então ScrollTrigger fica sem atualização no celular.
-// Todos os iPads (mínimo 744px) e notebooks ficam inalterados.
+// ── Mobile detection (celulares ≤ 480px) ──────────
 const _isMobile = window.innerWidth <= 480
+
+// ── Scroll setup ─────────────────────────────
 let lenis = null
 
 if (!_isMobile) {
+  // Desktop + iPad: Lenis smooth scroll
   lenis = new Lenis({
     duration: 1.4,
     easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -23,13 +23,21 @@ if (!_isMobile) {
   lenis.on('scroll', ScrollTrigger.update)
   gsap.ticker.add((time) => { lenis.raf(time * 1000) })
   gsap.ticker.lagSmoothing(0)
+} else {
+  // Celular: iOS Safari pausa JS durante scroll inércial.
+  // normalizeScroll faz o GSAP dirigir o scroll via RAF,
+  // garantindo que os triggers disparem continuamente.
+  ScrollTrigger.normalizeScroll(true)
 }
 
-// ── Mobile menu refs ───────────────────────────
+// Impede recalc constante com chrome do browser mobile
+ScrollTrigger.config({ ignoreMobileResize: true })
+
+// ── Mobile menu refs ──────────────────────────
 const hamburger = document.getElementById('navHamburger')
 const navMobile  = document.getElementById('navMobile')
 
-// Anchor links — Lenis em desktop/iPad, scrollTo nativo no celular
+// Anchor links — Lenis no desktop/iPad, scrollTo nativo no celular
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', e => {
     const href = anchor.getAttribute('href')
@@ -53,7 +61,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   })
 })
 
-// ── Navbar scrolled state ──────────────────────
+// ── Navbar scrolled state ─────────────────────
 const navbar = document.getElementById('navbar')
 ScrollTrigger.create({
   start: 'top -40',
@@ -63,7 +71,7 @@ ScrollTrigger.create({
 
 if (!prefersReducedMotion) {
 
-  // ── Hero entrance ─────────────────────────────
+  // ── Hero entrance ────────────────────────────
   gsap.timeline({ defaults: { ease: 'power1.out' } })
     .from('.hero-eyebrow',   { opacity: 0, y: 12, duration: 1.2, delay: 0.4 })
     .from('.hero-headline',  { opacity: 0, y: 20, duration: 1.6 }, '-=0.8')
@@ -72,14 +80,14 @@ if (!prefersReducedMotion) {
     .from('.hero-stat',      { opacity: 0, y: 12, duration: 1.2, stagger: 0.14 }, '-=0.8')
     .from('.stat-divider',   { opacity: 0, duration: 0.8 }, '-=1.0')
 
-  // ── Hero grid parallax ─────────────────────────
+  // ── Hero grid parallax ────────────────────────
   gsap.to('.hero-grid', {
     yPercent: 18,
     ease: 'none',
     scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
   })
 
-  // ── Animated counter ───────────────────────────
+  // ── Animated counter ──────────────────────────
   document.querySelectorAll('.stat-value[data-target]').forEach(el => {
     const target = parseInt(el.getAttribute('data-target'))
     gsap.fromTo(el,
@@ -94,7 +102,7 @@ if (!prefersReducedMotion) {
     )
   })
 
-  // ── Section reveal helper ──────────────────────
+  // ── Section reveal helper ─────────────────────
   const reveal = (selector, trigger, vars = {}) => {
     gsap.from(selector, {
       opacity: 0, y: 20, duration: 1.4, ease: 'power1.out',
@@ -145,7 +153,7 @@ if (!prefersReducedMotion) {
 
   reveal('.footer-brand, .footer-col', '.footer', { stagger: 0.1 })
 
-  // ── Story Scroll — Services (desktop/tablet only) ───
+  // ── Story Scroll — Services (desktop/tablet only) ──
   ;(function initStoryScroll() {
     if (window.innerWidth <= 768) return
     const container = document.getElementById('servicesFlow')
@@ -186,7 +194,7 @@ if (!prefersReducedMotion) {
 
 } // end if (!prefersReducedMotion)
 
-// ── Mobile menu ──────────────────────────────
+// ── Mobile menu ─────────────────────────────
 hamburger.addEventListener('click', () => {
   const isOpen = navMobile.classList.toggle('open')
   hamburger.classList.toggle('open', isOpen)
@@ -203,7 +211,7 @@ window.addEventListener('resize', () => {
   }
 })
 
-// ── Form → WhatsApp ───────────────────────────
+// ── Form → WhatsApp ──────────────────────────
 const form = document.getElementById('contatoForm')
 if (form) {
   form.addEventListener('submit', e => {
@@ -221,8 +229,9 @@ if (form) {
   })
 }
 
-// ── ScrollTrigger refresh ──────────────────────
+// ── ScrollTrigger refresh ─────────────────────
 document.fonts.ready.then(() => ScrollTrigger.refresh())
+setTimeout(() => ScrollTrigger.refresh(), 300) // fallback para mobile lento
 
 let _refreshTimer
 window.addEventListener('resize', () => {
