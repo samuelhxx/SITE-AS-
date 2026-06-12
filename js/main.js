@@ -6,12 +6,11 @@ gsap.registerPlugin(ScrollTrigger)
 // ── Reduced motion ─────────────────────────────
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// ── Lenis: somente em desktop / tablet (> 768px) ──────
+// ── Lenis: desativado apenas em celulares (≤480px) ─────
 // Lenis 1.0.x com smoothTouch:false não captura eventos touch,
-// então lenis.on('scroll') nunca dispara no celular e o
-// ScrollTrigger fica sem atualização. No mobile usamos scroll
-// nativo — o ScrollTrigger funciona diretamente sem proxy.
-const _isMobile = window.innerWidth <= 768
+// então ScrollTrigger fica sem atualização no celular.
+// Todos os iPads (mínimo 744px) e notebooks ficam inalterados.
+const _isMobile = window.innerWidth <= 480
 let lenis = null
 
 if (!_isMobile) {
@@ -30,7 +29,7 @@ if (!_isMobile) {
 const hamburger = document.getElementById('navHamburger')
 const navMobile  = document.getElementById('navMobile')
 
-// Anchor links — Lenis no desktop, scrollTo nativo no mobile
+// Anchor links — Lenis em desktop/iPad, scrollTo nativo no celular
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', e => {
     const href = anchor.getAttribute('href')
@@ -113,7 +112,7 @@ if (!prefersReducedMotion) {
   const isDesktop = window.matchMedia('(min-width: 769px)').matches
   obraItems.forEach((item, i) => {
     const card = item.querySelector('.obra-sticky-card')
-    // No mobile o CSS força opacity:1 e transform:none nas cards — animamos apenas em telas maiores
+    // No celular o CSS força opacity:1 e transform:none — animamos apenas em telas maiores
     if (!_isMobile) {
       gsap.from(card, {
         opacity: 0, y: 24, duration: 1.4, ease: 'power1.out',
@@ -148,7 +147,7 @@ if (!prefersReducedMotion) {
 
   // ── Story Scroll — Services (desktop/tablet only) ───
   ;(function initStoryScroll() {
-    if (_isMobile) return
+    if (window.innerWidth <= 768) return
     const container = document.getElementById('servicesFlow')
     if (!container) return
     const sections = Array.from(container.querySelectorAll('[data-flow-section]'))
