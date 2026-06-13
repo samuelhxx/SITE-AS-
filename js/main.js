@@ -1,27 +1,44 @@
 /* AS Construction — main.js */
 
-// ── Lenis smooth scroll ──────────────
-const lenis = new Lenis({
-  duration: 1.2,
-  easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  smooth: true
-})
+gsap.registerPlugin(ScrollTrigger)
 
-function raf(time) {
-  lenis.raf(time)
-  ScrollTrigger.update()
-  requestAnimationFrame(raf)
+const _isMobile = window.innerWidth <= 480
+
+// ── Lenis smooth scroll (desktop & tablet only) ──────────────────────────────
+let lenis = null
+
+if (!_isMobile) {
+  lenis = new Lenis({
+    duration: 1.2,
+    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smooth: true,
+    smoothTouch: false,
+  })
+  lenis.on('scroll', ScrollTrigger.update)
+  gsap.ticker.add((time) => { lenis.raf(time * 1000) })
+  gsap.ticker.lagSmoothing(0)
 }
-requestAnimationFrame(raf)
 
-// Anchor links via Lenis
+// iOS defers scroll events during momentum — touchmove fires each frame during active touch
+if (_isMobile) {
+  document.addEventListener('touchmove', () => ScrollTrigger.update(), { passive: true })
+}
+
+// Anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', e => {
     const href = anchor.getAttribute('href')
     if (href === '#') return
     e.preventDefault()
     const target = document.querySelector(href)
-    if (target) lenis.scrollTo(target, { offset: -80 })
+    if (target) {
+      if (lenis) {
+        lenis.scrollTo(target, { offset: -80 })
+      } else {
+        const y = target.getBoundingClientRect().top + window.scrollY - 80
+        window.scrollTo({ top: y, behavior: 'smooth' })
+      }
+    }
     // close mobile menu
     navMobile.classList.remove('open')
     hamburger.classList.remove('open')
@@ -29,9 +46,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     navMobile.setAttribute('aria-hidden', 'true')
   })
 })
-
-// ── GSAP setup ───────────────────────
-gsap.registerPlugin(ScrollTrigger)
 
 // ── Navbar scroll behavior ───────────
 const navbar = document.getElementById('navbar')
@@ -75,7 +89,7 @@ document.querySelectorAll('.stat-value[data-target]').forEach(el => {
   )
 })
 
-// ── Scroll reveal helpers ────────────
+// ── Scroll reveal helper ────────────
 function reveal(selector, vars = {}) {
   gsap.from(selector, {
     opacity: 0, y: 32, duration: 0.8, ease: 'power3.out', stagger: 0.12,
@@ -193,3 +207,7 @@ if (form) {
     setTimeout(() => { btn.innerHTML = orig; btn.style.background = '' }, 3000)
   })
 }
+
+// ── ScrollTrigger refresh after layout settles ────────────────────────────────
+document.fonts.ready.then(() => ScrollTrigger.refresh())
+setTimeout(() => ScrollTrigger.refresh(), 300)
