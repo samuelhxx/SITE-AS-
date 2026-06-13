@@ -6,14 +6,13 @@ gsap.registerPlugin(ScrollTrigger)
 // ── Reduced motion ────────────────────────────
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// ── Mobile detection (celulares ≤ 480px) ──────────
+// ── Mobile detection (celulares ≤ 480px) ─────────
 const _isMobile = window.innerWidth <= 480
 
-// ── Scroll setup ─────────────────────────────
+// ── Lenis: apenas desktop / iPad (> 480px) ───────
 let lenis = null
 
 if (!_isMobile) {
-  // Desktop + iPad: Lenis smooth scroll
   lenis = new Lenis({
     duration: 1.4,
     easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -23,21 +22,13 @@ if (!_isMobile) {
   lenis.on('scroll', ScrollTrigger.update)
   gsap.ticker.add((time) => { lenis.raf(time * 1000) })
   gsap.ticker.lagSmoothing(0)
-} else {
-  // Celular: iOS Safari pausa JS durante scroll inércial.
-  // normalizeScroll faz o GSAP dirigir o scroll via RAF,
-  // garantindo que os triggers disparem continuamente.
-  ScrollTrigger.normalizeScroll(true)
 }
 
-// Impede recalc constante com chrome do browser mobile
-ScrollTrigger.config({ ignoreMobileResize: true })
-
-// ── Mobile menu refs ──────────────────────────
+// ── Mobile menu refs ─────────────────────────
 const hamburger = document.getElementById('navHamburger')
 const navMobile  = document.getElementById('navMobile')
 
-// Anchor links — Lenis no desktop/iPad, scrollTo nativo no celular
+// Anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', e => {
     const href = anchor.getAttribute('href')
@@ -69,9 +60,24 @@ ScrollTrigger.create({
   onLeaveBack: () => navbar.classList.remove('scrolled')
 })
 
+// ── Reveal helper ────────────────────────────
+// Fora do guard de prefersReducedMotion: os fade-ins das seções
+// funcionam em todos os dispositivos. Se o usuário tem
+// Reduce Motion ativo, os elementos ficam visíveis no CSS
+// imediatamente (opacity:1 default) e a função retorna cedo.
+const reveal = (selector, trigger, vars = {}) => {
+  if (prefersReducedMotion) return
+  gsap.from(selector, {
+    opacity: 0, y: 20, duration: 1.4, ease: 'power1.out',
+    scrollTrigger: { trigger: trigger || selector, start: 'top 88%', once: true },
+    ...vars
+  })
+}
+
+// ── Animações complexas (parallax/scrub/rotation) ───
 if (!prefersReducedMotion) {
 
-  // ── Hero entrance ────────────────────────────
+  // Hero entrance
   gsap.timeline({ defaults: { ease: 'power1.out' } })
     .from('.hero-eyebrow',   { opacity: 0, y: 12, duration: 1.2, delay: 0.4 })
     .from('.hero-headline',  { opacity: 0, y: 20, duration: 1.6 }, '-=0.8')
@@ -80,68 +86,54 @@ if (!prefersReducedMotion) {
     .from('.hero-stat',      { opacity: 0, y: 12, duration: 1.2, stagger: 0.14 }, '-=0.8')
     .from('.stat-divider',   { opacity: 0, duration: 0.8 }, '-=1.0')
 
-  // ── Hero grid parallax ────────────────────────
+  // Hero grid parallax
   gsap.to('.hero-grid', {
-    yPercent: 18,
-    ease: 'none',
+    yPercent: 18, ease: 'none',
     scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
   })
 
-  // ── Animated counter ──────────────────────────
+  // Counter
   document.querySelectorAll('.stat-value[data-target]').forEach(el => {
     const target = parseInt(el.getAttribute('data-target'))
-    gsap.fromTo(el,
-      { textContent: 0 },
-      {
-        textContent: target,
-        duration: 2.4,
-        ease: 'power1.out',
-        snap: { textContent: 1 },
-        scrollTrigger: { trigger: el, start: 'top 90%', once: true }
-      }
-    )
+    gsap.fromTo(el, { textContent: 0 }, {
+      textContent: target, duration: 2.4, ease: 'power1.out',
+      snap: { textContent: 1 },
+      scrollTrigger: { trigger: el, start: 'top 90%', once: true }
+    })
   })
 
-  // ── Section reveal helper ─────────────────────
-  const reveal = (selector, trigger, vars = {}) => {
-    gsap.from(selector, {
-      opacity: 0, y: 20, duration: 1.4, ease: 'power1.out',
-      scrollTrigger: { trigger: trigger || selector, start: 'top 88%', once: true },
-      ...vars
+} // end complex animations
+
+// ── Reveals das seções (sempre ativos) ───────────
+reveal('.credibility-label', '.section-credibility')
+reveal('.coverage-item', '.section-coverage', { stagger: 0.12 })
+reveal('#obras .section-header', '#obras')
+reveal('.obras-cta', '.obras-cta')
+
+const obraItems = document.querySelectorAll('.obra-sticky-item')
+const isDesktop = window.matchMedia('(min-width: 769px)').matches
+obraItems.forEach((item, i) => {
+  const card = item.querySelector('.obra-sticky-card')
+  // No celular o CSS força opacity:1 e transform:none nas cards
+  if (!_isMobile && !prefersReducedMotion) {
+    gsap.from(card, {
+      opacity: 0, y: 24, duration: 1.4, ease: 'power1.out',
+      scrollTrigger: { trigger: item, start: 'top 90%', once: true }
     })
-  }
-
-  reveal('.credibility-label', '.section-credibility')
-  reveal('.coverage-item', '.section-coverage', { stagger: 0.12 })
-  reveal('#obras .section-header', '#obras')
-  reveal('.obras-cta', '.obras-cta')
-
-  const obraItems = document.querySelectorAll('.obra-sticky-item')
-  const isDesktop = window.matchMedia('(min-width: 769px)').matches
-  obraItems.forEach((item, i) => {
-    const card = item.querySelector('.obra-sticky-card')
-    // No celular o CSS força opacity:1 e transform:none — animamos apenas em telas maiores
-    if (!_isMobile) {
-      gsap.from(card, {
-        opacity: 0, y: 24, duration: 1.4, ease: 'power1.out',
-        scrollTrigger: { trigger: item, start: 'top 90%', once: true }
-      })
-    }
     if (isDesktop && i < obraItems.length - 1) {
       gsap.to(card, {
         scale: 0.94,
-        scrollTrigger: {
-          trigger: obraItems[i + 1],
-          start: 'top bottom', end: 'top top', scrub: 1.8
-        }
+        scrollTrigger: { trigger: obraItems[i + 1], start: 'top bottom', end: 'top top', scrub: 1.8 }
       })
     }
-  })
+  }
+})
 
-  reveal('.diferenciais-left > *', '.diferenciais-layout', { x: -20, y: 0, stagger: 0.14 })
-  reveal('.diferencial-card', '.diferenciais-grid', { stagger: 0.1 })
-  reveal('.step', '.processo-steps', { x: -16, y: 0, stagger: 0.18 })
+reveal('.diferenciais-left > *', '.diferenciais-layout', { x: -20, y: 0, stagger: 0.14 })
+reveal('.diferencial-card', '.diferenciais-grid', { stagger: 0.1 })
+reveal('.step', '.processo-steps', { x: -16, y: 0, stagger: 0.18 })
 
+if (!prefersReducedMotion) {
   gsap.from('.contato-left > *', {
     opacity: 0, x: -20, duration: 1.4, ease: 'power1.out', stagger: 0.14,
     scrollTrigger: { trigger: '.contato-layout', start: 'top 88%', once: true }
@@ -150,10 +142,12 @@ if (!prefersReducedMotion) {
     opacity: 0, x: 20, duration: 1.6, ease: 'power1.out',
     scrollTrigger: { trigger: '.contato-layout', start: 'top 88%', once: true }
   })
+}
 
-  reveal('.footer-brand, .footer-col', '.footer', { stagger: 0.1 })
+reveal('.footer-brand, .footer-col', '.footer', { stagger: 0.1 })
 
-  // ── Story Scroll — Services (desktop/tablet only) ──
+// ── Story Scroll — Services (desktop/tablet only) ──
+if (!prefersReducedMotion) {
   ;(function initStoryScroll() {
     if (window.innerWidth <= 768) return
     const container = document.getElementById('servicesFlow')
@@ -165,36 +159,24 @@ if (!prefersReducedMotion) {
       gsap.set(section, { zIndex: i + 1 })
       const inner = section.querySelector('[data-flow-inner]')
       if (!inner) return
-
       if (i > 0) {
         gsap.set(inner, { rotation: 30, transformOrigin: 'bottom left' })
         gsap.to(inner, {
-          rotation: 0,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top bottom',
-            end: 'top 25%',
-            scrub: true
-          }
+          rotation: 0, ease: 'none',
+          scrollTrigger: { trigger: section, start: 'top bottom', end: 'top 25%', scrub: true }
         })
       }
-
       if (i < sections.length - 1) {
         ScrollTrigger.create({
-          trigger: section,
-          start: 'bottom bottom',
-          end: 'bottom top',
-          pin: true,
-          pinSpacing: false
+          trigger: section, start: 'bottom bottom', end: 'bottom top',
+          pin: true, pinSpacing: false
         })
       }
     })
   })()
+}
 
-} // end if (!prefersReducedMotion)
-
-// ── Mobile menu ─────────────────────────────
+// ── Mobile menu ────────────────────────────
 hamburger.addEventListener('click', () => {
   const isOpen = navMobile.classList.toggle('open')
   hamburger.classList.toggle('open', isOpen)
@@ -211,7 +193,7 @@ window.addEventListener('resize', () => {
   }
 })
 
-// ── Form → WhatsApp ──────────────────────────
+// ── Form → WhatsApp ─────────────────────────
 const form = document.getElementById('contatoForm')
 if (form) {
   form.addEventListener('submit', e => {
@@ -231,7 +213,7 @@ if (form) {
 
 // ── ScrollTrigger refresh ─────────────────────
 document.fonts.ready.then(() => ScrollTrigger.refresh())
-setTimeout(() => ScrollTrigger.refresh(), 300) // fallback para mobile lento
+setTimeout(() => ScrollTrigger.refresh(), 300)
 
 let _refreshTimer
 window.addEventListener('resize', () => {
