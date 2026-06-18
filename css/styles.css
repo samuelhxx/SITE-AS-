@@ -89,8 +89,8 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .nav-inner{display:flex;align-items:center;height:100%;padding:0 var(--sp-4);max-width:var(--container);margin:0 auto;gap:var(--sp-4)}
 .nav-logo{display:flex;align-items:center;text-decoration:none;flex-shrink:0}
 .nav-logo-img{height:200px;width:auto;display:block;object-fit:contain}
-@media(max-width:900px){.nav-logo-img{height:90px}}
-@media(max-width:900px){:root{--navbar-h:110px}#navbar.scrolled{height:104px}}
+@media(max-width:900px){.nav-logo-img{height:60px}}
+@media(max-width:900px){:root{--navbar-h:80px}#navbar.scrolled{height:74px}}
 .logo-mark{display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--primary);border-radius:var(--r-sm);font-family:var(--font-display);font-weight:700;font-size:12px}
 .logo-a{color:#fff}
 .logo-s{color:rgba(255,255,255,.6)}
