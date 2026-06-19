@@ -6,10 +6,10 @@ gsap.registerPlugin(ScrollTrigger)
 // ── Reduced motion ────────────────────────────
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// ── Mobile detection (celulares ≤ 480px) ─────────
-const _isMobile = window.innerWidth <= 480
+// ── Mobile detection (celulares, alinhado ao breakpoint CSS 768px) ──
+const _isMobile = window.innerWidth <= 767
 
-// ── Lenis: apenas desktop / iPad (> 480px) ───────
+// ── Lenis: desktop e iPad (> 767px) ─────────────
 let lenis = null
 
 if (!_isMobile) {
@@ -23,6 +23,14 @@ if (!_isMobile) {
   gsap.ticker.add((time) => { lenis.raf(time * 1000) })
   gsap.ticker.lagSmoothing(0)
 }
+
+// ── Alimentar ScrollTrigger via scroll nativo (fix mobile) ──────────
+// No iOS, o rAF (e portanto o ticker do GSAP) pausa durante o momentum
+// do scroll por toque. Sem Lenis, o ScrollTrigger nunca recebe updates.
+// Com Lenis + smoothTouch:false, lenis.emit('scroll') também não dispara
+// em dispositivos touch. Esta linha garante que o ScrollTrigger seja
+// atualizado pelo evento nativo de scroll em TODOS os dispositivos.
+window.addEventListener('scroll', ScrollTrigger.update, { passive: true })
 
 // ── Mobile menu refs ─────────────────────────
 const hamburger = document.getElementById('navHamburger')
@@ -221,5 +229,6 @@ window.addEventListener('resize', () => {
   _refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 250)
 })
 window.addEventListener('orientationchange', () => {
-  setTimeout(() => ScrollTrigger.refresh(), 350)
+  // Espera o browser recalcular o layout após rotação antes de refrescar
+  setTimeout(() => ScrollTrigger.refresh(), 600)
 })
