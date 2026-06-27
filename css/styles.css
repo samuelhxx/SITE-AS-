@@ -300,3 +300,7 @@ a.channel-item:hover{background:var(--bg-2)}
 .whatsapp-float:hover{transform:translateY(-2px);box-shadow:0 12px 48px rgba(0,0,0,.6)}
 .whatsapp-float svg{width:18px;height:18px;flex-shrink:0}
 @media(max-width:480px){.whatsapp-float span{display:none}.whatsapp-float{padding:14px;border-radius:50%}}
+.call-float{position:fixed;bottom:calc(var(--sp-5) + 58px);right:var(--sp-5);z-index:99;display:flex;align-items:center;gap:10px;background:#1d4ed8;color:#fff;padding:14px 22px;border-radius:var(--r-sm);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;box-shadow:0 8px 40px rgba(0,0,0,.5);transition:transform var(--t-base),box-shadow var(--t-base);animation:floatIn 800ms 1.8s both ease}
+.call-float:hover{transform:translateY(-2px);box-shadow:0 12px 48px rgba(0,0,0,.6)}
+.call-float svg{width:18px;height:18px;flex-shrink:0}
+@media(max-width:480px){.call-float span{display:none}.call-float{padding:14px;border-radius:50%;bottom:calc(var(--sp-5) + 62px)}}
