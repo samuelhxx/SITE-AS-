@@ -210,7 +210,11 @@ if (form) {
     const msg = encodeURIComponent(
       `Olá, vim pelo site!\n\nNome: ${data.get('nome')}\nEmpresa: ${data.get('empresa')}\nTelefone: ${data.get('telefone')}\nDemanda: ${data.get('demanda') || 'não especificado'}\n\n${data.get('mensagem')}`
     )
-    window.open(`https://wa.me/5511933680596?text=${msg}`, '_blank')
+    if (typeof gtag_report_conversion === 'function') {
+      gtag_report_conversion(`https://wa.me/5511933680596?text=${msg}`)
+    } else {
+      window.open(`https://wa.me/5511933680596?text=${msg}`, '_blank')
+    }
     const btn = form.querySelector('button[type="submit"]')
     const orig = btn.innerHTML
     btn.innerHTML = 'Mensagem enviada ✓'
