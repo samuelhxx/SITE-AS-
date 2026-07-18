@@ -304,3 +304,19 @@ a.channel-item:hover{background:var(--bg-2)}
 .call-float:hover{transform:translateY(-2px);box-shadow:0 12px 48px rgba(0,0,0,.6)}
 .call-float svg{width:18px;height:18px;flex-shrink:0}
 @media(max-width:480px){.call-float span{display:none}.call-float{padding:14px;border-radius:50%;bottom:calc(var(--sp-5) + 62px)}}
+
+/* ── Modal de captura de lead (WhatsApp) ─────── */
+.lead-modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:var(--sp-3);opacity:0;visibility:hidden;transition:opacity var(--t-base),visibility var(--t-base)}
+.lead-modal-overlay.open{opacity:1;visibility:visible}
+.lead-modal{position:relative;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;background:var(--bg-1);border:1px solid var(--border-1);border-radius:var(--r-md);padding:var(--sp-5);transform:translateY(16px);transition:transform var(--t-base)}
+.lead-modal-overlay.open .lead-modal{transform:translateY(0)}
+.lead-modal-close{position:absolute;top:14px;right:14px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--border-1);border-radius:var(--r-sm);color:var(--text-1);font-size:18px;line-height:1;cursor:pointer;transition:color var(--t-fast),border-color var(--t-fast)}
+.lead-modal-close:hover{color:var(--text-0);border-color:var(--border-2)}
+.lead-modal-eyebrow{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:#25D366}
+.lead-modal-title{font-family:var(--font-display);font-size:var(--fs-xl);color:var(--text-0);margin:10px 0 6px}
+.lead-modal-sub{font-size:var(--fs-sm);color:var(--text-1);margin-bottom:var(--sp-4)}
+.lead-modal form{display:flex;flex-direction:column;gap:var(--sp-3)}
+.lead-modal textarea{min-height:80px}
+.lead-modal-submit{justify-content:center;width:100%}
+.lead-modal-submit:disabled{opacity:.6;cursor:wait}
+@media(max-width:480px){.lead-modal{padding:var(--sp-4)}}

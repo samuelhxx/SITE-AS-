@@ -223,6 +223,77 @@ if (form) {
   })
 }
 
+// ── Modal de captura de lead → WhatsApp ─────────
+// Intercepta os botões de WhatsApp: abre o modal, envia o lead ao
+// Formspree (AJAX, sem recarregar) e só então encaminha ao WhatsApp
+// via gtag_report_conversion (que dispara a conversão do Google Ads
+// e abre em nova aba). Falha no Formspree não bloqueia o contato.
+const leadOverlay = document.getElementById('leadModalOverlay')
+const leadForm    = document.getElementById('leadForm')
+const leadClose   = document.getElementById('leadModalClose')
+let leadWhatsUrl  = 'https://wa.me/5511933680596'
+
+if (leadOverlay && leadForm) {
+  const openLeadModal = url => {
+    leadWhatsUrl = url
+    leadOverlay.classList.add('open')
+    leadOverlay.setAttribute('aria-hidden', 'false')
+    document.body.style.overflow = 'hidden'
+  }
+  const closeLeadModal = () => {
+    leadOverlay.classList.remove('open')
+    leadOverlay.setAttribute('aria-hidden', 'true')
+    document.body.style.overflow = ''
+  }
+
+  document.querySelectorAll('a[href^="https://wa.me/"]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault()
+      openLeadModal(link.getAttribute('href'))
+    })
+  })
+
+  leadClose.addEventListener('click', closeLeadModal)
+  leadOverlay.addEventListener('click', e => { if (e.target === leadOverlay) closeLeadModal() })
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLeadModal() })
+
+  const goToWhats = () => {
+    const url = leadWhatsUrl
+    closeLeadModal()
+    if (typeof gtag_report_conversion === 'function') {
+      gtag_report_conversion(url)
+    } else {
+      const win = window.open(url, '_blank')
+      if (!win) window.location.href = url
+    }
+  }
+
+  leadForm.addEventListener('submit', e => {
+    e.preventDefault()
+    const btn  = leadForm.querySelector('button[type="submit"]')
+    const orig = btn.textContent
+    btn.disabled = true
+    btn.textContent = 'Enviando...'
+    const done = () => {
+      btn.disabled = false
+      btn.textContent = orig
+      leadForm.reset()
+      goToWhats()
+    }
+    // Timeout de 4s: rede lenta não pode segurar o lead nem estourar a
+    // janela de ativação do navegador (popup em nova aba)
+    Promise.race([
+      fetch('https://formspree.io/f/xeeygjla', {
+        method: 'POST',
+        body: new FormData(leadForm),
+        headers: { 'Accept': 'application/json' },
+        keepalive: true
+      }),
+      new Promise(resolve => setTimeout(resolve, 4000))
+    ]).then(done, done)
+  })
+}
+
 // ── ScrollTrigger refresh ─────────────────────
 document.fonts.ready.then(() => ScrollTrigger.refresh())
 setTimeout(() => ScrollTrigger.refresh(), 300)
