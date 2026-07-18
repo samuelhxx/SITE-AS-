@@ -73,7 +73,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=7">
+  <link rel="stylesheet" href="css/styles.css?v=8">
 </head>
 <body>
 
@@ -509,27 +509,30 @@
 <div class="lead-modal-overlay" id="leadModalOverlay" aria-hidden="true">
   <div class="lead-modal" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
     <button type="button" class="lead-modal-close" id="leadModalClose" aria-label="Fechar">&times;</button>
-    <span class="lead-modal-eyebrow">WhatsApp</span>
-    <h3 id="leadModalTitle" class="lead-modal-title">Fale com a gente no WhatsApp</h3>
+    <span class="lead-modal-tag">Atendimento via WhatsApp</span>
+    <h3 id="leadModalTitle" class="lead-modal-title">Fale com<br>a gente</h3>
     <p class="lead-modal-sub">Preencha rapidinho e vamos direto ao seu atendimento.</p>
     <form id="leadForm">
       <div class="form-group">
         <label for="leadNome">Nome *</label>
-        <input type="text" id="leadNome" name="nome" required placeholder="Seu nome">
+        <input type="text" id="leadNome" name="nome" required placeholder="Seu nome" autocomplete="name">
       </div>
-      <div class="form-group">
-        <label for="leadTelefone">Telefone *</label>
-        <input type="tel" id="leadTelefone" name="telefone" required placeholder="(11) 90000-0000">
-      </div>
-      <div class="form-group">
-        <label for="leadEmail">E-mail *</label>
-        <input type="email" id="leadEmail" name="email" required placeholder="voce@empresa.com.br">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="leadTelefone">Telefone *</label>
+          <input type="tel" id="leadTelefone" name="telefone" required placeholder="(11) 99999-9999" autocomplete="tel">
+        </div>
+        <div class="form-group">
+          <label for="leadEmail">E-mail *</label>
+          <input type="email" id="leadEmail" name="email" required placeholder="seu@email.com.br" autocomplete="email">
+        </div>
       </div>
       <div class="form-group">
         <label for="leadMensagem">Mensagem</label>
         <textarea id="leadMensagem" name="mensagem" rows="3" placeholder="Conte brevemente sua demanda (opcional)"></textarea>
       </div>
-      <button type="submit" class="btn btn-accent lead-modal-submit">Enviar e ir para o WhatsApp</button>
+      <button type="submit" class="btn btn-primary btn-full">Enviar e ir para o WhatsApp</button>
+      <p class="form-privacy">Suas informações são confidenciais e nunca serão compartilhadas.</p>
     </form>
   </div>
 </div>
