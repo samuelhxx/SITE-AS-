@@ -91,6 +91,7 @@ if (!prefersReducedMotion) {
     .from('.hero-headline',  { opacity: 0, y: 20, duration: 1.6 }, '-=0.8')
     .from('.hero-sub',       { opacity: 0, y: 16, duration: 1.4 }, '-=1.0')
     .from('.hero-ctas .btn', { opacity: 0, y: 12, duration: 1.2, stagger: 0.18 }, '-=0.9')
+    .from('.hero-services li', { opacity: 0, y: 10, duration: 1, stagger: 0.08 }, '-=0.8')
     .from('.hero-stat',      { opacity: 0, y: 12, duration: 1.2, stagger: 0.14 }, '-=0.8')
     .from('.stat-divider',   { opacity: 0, duration: 0.8 }, '-=1.0')
 
