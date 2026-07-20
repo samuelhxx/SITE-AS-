@@ -194,17 +194,20 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .obra-sticky-card:hover .obra-sticky-bg{transform:scale(1.02)}
 .obra-photo{flex:1;min-width:0;height:100%;object-fit:cover;display:block}
 @media(max-width:640px){.obra-sticky-bg .obra-photo:nth-child(n+3){display:none}}
-.obra-sticky-info{position:absolute;bottom:0;left:0;right:0;padding:var(--sp-10) var(--sp-6) var(--sp-6);background:linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.4) 55%,transparent 100%);display:flex;flex-direction:column;gap:10px}
-.obra-sticky-tag{display:inline-flex;align-items:center;gap:12px;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-.obra-sticky-tag::before{content:'';display:block;width:20px;height:1px;background:rgba(255,255,255,.25)}
-.obra-sticky-name{font-family:var(--font-display);font-size:var(--fs-2xl);font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.1}
+.obra-sticky-info{position:absolute;bottom:0;left:0;right:0;padding:var(--sp-12) var(--sp-6) var(--sp-6);background:linear-gradient(to top,rgba(0,0,0,.96) 0%,rgba(0,0,0,.9) 28%,rgba(0,0,0,.6) 60%,rgba(0,0,0,.15) 88%,transparent 100%);display:flex;flex-direction:column;gap:12px;text-shadow:0 1px 12px rgba(0,0,0,.75)}
+.obra-sticky-tag{display:inline-flex;align-items:center;gap:12px;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+.obra-sticky-tag::before{content:'';display:block;width:20px;height:1px;background:rgba(255,255,255,.4)}
+.obra-sticky-name{font-family:var(--font-display);font-size:var(--fs-2xl);font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.1}
 @media(max-width:640px){.obra-sticky-name{font-size:var(--fs-xl)}}
-.obra-sticky-desc{font-size:var(--fs-sm);color:rgba(255,255,255,.55);line-height:1.7;max-width:52ch;letter-spacing:.01em}
-.obra-sticky-location{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.obra-sticky-desc{font-size:var(--fs-sm);color:rgba(255,255,255,.82);line-height:1.7;max-width:52ch;letter-spacing:.01em}
+.obra-sticky-location{font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55)}
 .obras-cta{text-align:center}
 @media(max-width:768px){
-  .obra-sticky-item{position:relative;height:auto;padding:0 var(--sp-2);margin-bottom:2px}
-  .obra-sticky-card{aspect-ratio:4/3;max-width:100%;transform:none !important;opacity:1 !important}
+  .obra-sticky-item{position:relative;height:auto;padding:0 var(--sp-2);margin-bottom:var(--sp-4)}
+  /* Empilha foto e texto: nada de overlay, sem corte e legibilidade total */
+  .obra-sticky-card{aspect-ratio:auto;max-width:100%;transform:none !important;opacity:1 !important;display:flex;flex-direction:column}
+  .obra-sticky-bg{position:relative;inset:auto;aspect-ratio:4/3;width:100%}
+  .obra-sticky-info{position:relative;bottom:auto;padding:var(--sp-4);background:var(--bg-2);text-shadow:none}
   .obras-header{padding:var(--sp-10) 0 var(--sp-6)}
   .obras-footer{padding:var(--sp-6) 0 var(--sp-10)}
 }
