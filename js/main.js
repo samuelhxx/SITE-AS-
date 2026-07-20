@@ -137,6 +137,17 @@ obraItems.forEach((item, i) => {
         scrollTrigger: { trigger: obraItems[i + 1], start: 'top bottom', end: 'top top', scrub: 1.8 }
       })
     }
+    // No celular: zoom suave na foto conforme o card entra na tela — dá
+    // movimento contínuo mantendo o texto legível (sem sobreposição sticky)
+    if (_isMobile) {
+      const bg = item.querySelector('.obra-sticky-bg')
+      if (bg) {
+        gsap.fromTo(bg, { scale: 1.14 }, {
+          scale: 1, ease: 'none',
+          scrollTrigger: { trigger: item, start: 'top bottom', end: 'top 35%', scrub: true }
+        })
+      }
+    }
   }
 })
 
