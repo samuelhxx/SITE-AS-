@@ -224,15 +224,24 @@ if (form) {
   })
 }
 
-// ── Modal de captura de lead → WhatsApp ─────────
-// Intercepta os botões de WhatsApp: abre o modal, envia o lead ao
-// Formspree (AJAX, sem recarregar) e só então encaminha ao WhatsApp
-// via gtag_report_conversion (que dispara a conversão do Google Ads
-// e abre em nova aba). Falha no Formspree não bloqueia o contato.
+// ── Botões de WhatsApp: roteamento por dispositivo ──────────────────
+// Celular → vai DIRETO ao WhatsApp (link nativo, instantâneo) e dispara
+// a conversão do Google Ads no clique (fire-and-forget via beacon, que
+// sobrevive à navegação).
+// Desktop → abre modal simplificado (só telefone), captura via Formspree
+// e então encaminha ao WhatsApp por gtag_report_conversion (conversão +
+// nova aba). Falha no Formspree não bloqueia o contato.
+const CONVERSION_ID = 'AW-18234421982/E4_ACLf1_sccEN7l7PZD'
+const isMobileDevice = () =>
+  window.matchMedia('(max-width: 767px)').matches ||
+  /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+
 const leadOverlay = document.getElementById('leadModalOverlay')
 const leadForm    = document.getElementById('leadForm')
 const leadClose   = document.getElementById('leadModalClose')
 let leadWhatsUrl  = 'https://wa.me/5511933680596'
+
+const waLinks = document.querySelectorAll('a[href^="https://wa.me/"]')
 
 if (leadOverlay && leadForm) {
   const openLeadModal = url => {
@@ -240,6 +249,8 @@ if (leadOverlay && leadForm) {
     leadOverlay.classList.add('open')
     leadOverlay.setAttribute('aria-hidden', 'false')
     document.body.style.overflow = 'hidden'
+    const tel = document.getElementById('leadTelefone')
+    if (tel) setTimeout(() => tel.focus(), 60)
   }
   const closeLeadModal = () => {
     leadOverlay.classList.remove('open')
@@ -247,8 +258,16 @@ if (leadOverlay && leadForm) {
     document.body.style.overflow = ''
   }
 
-  document.querySelectorAll('a[href^="https://wa.me/"]').forEach(link => {
+  waLinks.forEach(link => {
     link.addEventListener('click', e => {
+      if (isMobileDevice()) {
+        // Celular: dispara a conversão e deixa o href abrir o WhatsApp.
+        // Sem preventDefault e sem callback → abertura instantânea.
+        if (typeof gtag === 'function') {
+          gtag('event', 'conversion', { send_to: CONVERSION_ID })
+        }
+        return
+      }
       e.preventDefault()
       openLeadModal(link.getAttribute('href'))
     })
