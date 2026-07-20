@@ -169,10 +169,6 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .flow-tags-light li{color:rgba(255,255,255,.65);border-color:rgba(255,255,255,.28)}
 .flow-cta{display:flex;align-items:center;gap:var(--sp-4);flex-wrap:wrap}
 .flow-cta-note{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45)}
-.flow-gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-2);margin-top:var(--sp-2)}
-.flow-gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;border:1px solid rgba(255,255,255,.08);border-radius:var(--r-sm)}
-.flow-gallery-2{grid-template-columns:repeat(2,1fr);max-width:720px}
-@media(max-width:768px){.flow-gallery{grid-template-columns:repeat(2,1fr)}}
 @media(prefers-reduced-motion:reduce){.flow-inner{transform:none !important}}
 @media(max-width:768px){
   .flow-section{min-height:auto;border-bottom:1px solid rgba(255,255,255,.05)}
@@ -191,10 +187,13 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .obra-sticky-item:nth-child(3){z-index:3}
 .obra-sticky-item:nth-child(4){z-index:4}
 .obra-sticky-item:nth-child(5){z-index:5}
+.obra-sticky-item:nth-child(6){z-index:6}
+.obra-sticky-item:nth-child(7){z-index:7}
 .obra-sticky-card{position:relative;width:100%;max-width:1100px;aspect-ratio:16/9;border-radius:var(--r-md);overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.85);will-change:transform;transform-origin:50% 0}
 .obra-sticky-bg{position:absolute;inset:0;transition:transform 1.4s ease;display:flex}
 .obra-sticky-card:hover .obra-sticky-bg{transform:scale(1.02)}
 .obra-photo{flex:1;min-width:0;height:100%;object-fit:cover;display:block}
+@media(max-width:640px){.obra-sticky-bg .obra-photo:nth-child(n+3){display:none}}
 .obra-sticky-info{position:absolute;bottom:0;left:0;right:0;padding:var(--sp-10) var(--sp-6) var(--sp-6);background:linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.4) 55%,transparent 100%);display:flex;flex-direction:column;gap:10px}
 .obra-sticky-tag{display:inline-flex;align-items:center;gap:12px;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.4)}
 .obra-sticky-tag::before{content:'';display:block;width:20px;height:1px;background:rgba(255,255,255,.25)}
