@@ -123,12 +123,14 @@ const obraItems = document.querySelectorAll('.obra-sticky-item')
 const isDesktop = window.matchMedia('(min-width: 769px)').matches
 obraItems.forEach((item, i) => {
   const card = item.querySelector('.obra-sticky-card')
-  // No celular o CSS força opacity:1 e transform:none nas cards
-  if (!_isMobile && !prefersReducedMotion) {
+  if (!prefersReducedMotion) {
+    // Entrada em fade+slide: ativa em celular e desktop
     gsap.from(card, {
       opacity: 0, y: 24, duration: 1.4, ease: 'power1.out',
       scrollTrigger: { trigger: item, start: 'top 90%', once: true }
     })
+    // Efeito de escala no empilhamento: só desktop (no celular os cards
+    // são empilhados/legíveis, sem sobreposição sticky)
     if (isDesktop && i < obraItems.length - 1) {
       gsap.to(card, {
         scale: 0.94,
@@ -155,10 +157,9 @@ if (!prefersReducedMotion) {
 
 reveal('.footer-brand, .footer-col', '.footer', { stagger: 0.1 })
 
-// ── Story Scroll — Services (desktop/tablet only) ──
+// ── Story Scroll — Services (todos os dispositivos) ──
 if (!prefersReducedMotion) {
   ;(function initStoryScroll() {
-    if (window.innerWidth <= 768) return
     const container = document.getElementById('servicesFlow')
     if (!container) return
     const sections = Array.from(container.querySelectorAll('[data-flow-section]'))

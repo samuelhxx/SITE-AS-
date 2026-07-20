@@ -171,8 +171,10 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .flow-cta-note{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45)}
 @media(prefers-reduced-motion:reduce){.flow-inner{transform:none !important}}
 @media(max-width:768px){
-  .flow-section{min-height:auto;border-bottom:1px solid rgba(255,255,255,.05)}
-  .flow-inner{min-height:auto;padding:var(--sp-10) var(--sp-3) var(--sp-8);transform:none !important}
+  /* Mantém o story-scroll (pin + rotação) igual ao desktop: painéis de
+     altura de tela, sem travar o transform que o GSAP controla. */
+  .flow-section{border-bottom:1px solid rgba(255,255,255,.05)}
+  .flow-inner{padding:var(--sp-10) var(--sp-3) var(--sp-8)}
   .flow-big-title{font-size:clamp(2.2rem,9vw,3.5rem)}
 }
 
@@ -205,7 +207,7 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 @media(max-width:768px){
   .obra-sticky-item{position:relative;height:auto;padding:0 var(--sp-2);margin-bottom:var(--sp-4)}
   /* Empilha foto e texto: nada de overlay, sem corte e legibilidade total */
-  .obra-sticky-card{aspect-ratio:auto;max-width:100%;transform:none !important;opacity:1 !important;display:flex;flex-direction:column}
+  .obra-sticky-card{aspect-ratio:auto;max-width:100%;display:flex;flex-direction:column}
   .obra-sticky-bg{position:relative;inset:auto;aspect-ratio:4/3;width:100%}
   .obra-sticky-info{position:relative;bottom:auto;padding:var(--sp-4);background:var(--bg-2);text-shadow:none}
   .obras-header{padding:var(--sp-10) 0 var(--sp-6)}
