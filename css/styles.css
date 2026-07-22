@@ -330,3 +330,19 @@ a.channel-item:hover{background:var(--bg-2)}
 .lead-modal textarea{min-height:80px}
 .lead-modal .btn-full:disabled{opacity:.6;cursor:wait}
 @media(max-width:480px){.lead-modal{padding:var(--sp-4)}.lead-modal .form-row{grid-template-columns:1fr}}
+
+/* —— Página legal (Política de Privacidade) —————————————— */
+.legal-main{padding:calc(var(--navbar-h) + var(--sp-10)) 0 var(--sp-16);background:var(--bg-0)}
+.legal-header{margin-bottom:var(--sp-8)}
+.legal-header .section-tag{margin-bottom:var(--sp-4)}
+.legal-title{font-family:var(--font-display);font-size:var(--fs-4xl);font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--text-0);line-height:1.1;margin-bottom:var(--sp-3)}
+.legal-updated{font-size:var(--fs-sm);color:var(--text-2)}
+.legal-content{max-width:760px}
+.legal-content h2{font-family:var(--font-display);font-size:var(--fs-xl);font-weight:600;letter-spacing:.02em;color:var(--text-0);margin:var(--sp-6) 0 var(--sp-2)}
+.legal-content p,.legal-content li{font-size:var(--fs-base);line-height:1.8;color:var(--text-1)}
+.legal-content p{margin-bottom:var(--sp-3)}
+.legal-content ul{list-style:disc;padding-left:1.4em;margin-bottom:var(--sp-3);display:flex;flex-direction:column;gap:8px}
+.legal-content a{color:var(--text-0);text-decoration:underline;text-underline-offset:3px}
+.legal-content strong{color:var(--text-0);font-weight:600}
+.form-privacy a{color:var(--text-1);text-decoration:underline;text-underline-offset:2px}
+.footer-legal-link{color:inherit;text-decoration:underline;text-underline-offset:2px}
