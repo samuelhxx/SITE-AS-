@@ -146,9 +146,9 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .clients-track-wrapper::before,.clients-track-wrapper::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:1;pointer-events:none}
 .clients-track-wrapper::before{left:0;background:linear-gradient(to right,var(--bg-1),transparent)}
 .clients-track-wrapper::after{right:0;background:linear-gradient(to left,var(--bg-1),transparent)}
-.clients-track{display:flex;gap:var(--sp-10);animation:marquee 28s linear infinite;width:max-content}
+.clients-track{display:flex;animation:marquee 32s linear infinite;width:max-content}
 @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.client-item{display:flex;align-items:center;padding:var(--sp-2) var(--sp-4)}
+.client-item{display:flex;align-items:center;padding:var(--sp-2) var(--sp-4);margin-right:var(--sp-10)}
 .client-logo-text{font-family:var(--font-display);font-size:var(--fs-sm);font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.15);transition:color var(--t-slow);white-space:nowrap}
 .client-item:hover .client-logo-text{color:rgba(255,255,255,.55)}
 
